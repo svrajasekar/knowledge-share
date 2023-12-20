@@ -1,0 +1,30 @@
+pipeline {
+    
+    agent any
+
+    environment {
+        DOCKER_IMAGE_TAG = "0.0.2"
+    }    
+
+    stages {
+    	stage('Git Checkout') {
+        	steps {
+            	git branch: 'main', credentialsId: 'git-credentials', url: 'https://github.com/rajasekarsv/intain-va-node-app.git'
+        	}
+    	}
+        stage('Docker Build') {
+            steps {
+                sh 'docker build -t intainregistry/intainva-external-app:${DOCKER_IMAGE_TAG}.${BUILD_NUMBER} .'
+            }
+        }
+        stage('Docker Push') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker_pat', passwordVariable: 'docker_patPassword', usernameVariable: 'docker_patUser')]) {
+                    sh "docker login -u ${env.docker_patUser} -p ${env.docker_patPassword}"
+                    sh 'docker push intainregistry/intainva-external-app:${DOCKER_IMAGE_TAG}.${BUILD_NUMBER}'
+                    sh 'docker push intainregistry/intainva-external-app:latest'
+                }
+            }
+        }
+    }
+}

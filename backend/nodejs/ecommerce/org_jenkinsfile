@@ -1,0 +1,64 @@
+pipeline {
+    
+    options {
+
+    buildDiscarder(
+        logRotator(
+            // number of build logs to keep
+            numToKeepStr:'3',
+            // history to keep in days
+            daysToKeepStr: '3',
+            // artifacts are kept for days
+            artifactDaysToKeepStr: '3',
+            // number of builds have their artifacts kept
+            artifactNumToKeepStr: '3'
+        )
+    )
+}
+
+    agent any
+
+    environment {
+        DOCKER_PAT_CREDENTIALS=credentials('docker_pat')
+        DOCKER_REGISTRY_URL = 'https://registry.hub.docker.com'
+        DOCKER_IMAGE_TAG = "0.0.2"
+        K8S_NAMESPACE = 'fabricclient'
+        KUBECONFIG = credentials('kubeconfig')
+    }    
+    	stages {
+
+    	stage('Git') {
+        	steps {
+            	git branch: 'main', credentialsId: 'git-pat', url: 'https://github.com/mohana-intain/intain-va-node-app.git'
+        	}
+    	}
+    	        stage('Docker Build') {
+            steps {
+                  sh 'docker build -t intainft/intainva-external-app:${DOCKER_IMAGE_TAG} .'
+      }
+    }
+        stage('Docker Push') {
+            steps {
+                  withCredentials([usernamePassword(credentialsId: 'docker_pat', passwordVariable: 'docker_patPassword', usernameVariable: 'docker_patUser')]) {
+                sh "docker login -u ${env.docker_patUser} -p ${env.docker_patPassword}"
+                sh 'docker push intainft/intainva-external-app:${DOCKER_IMAGE_TAG}'
+                
+        }
+      }
+    }  
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    // Get the Kubernetes configuration file path
+                    def kubeConfigPath = sh(script: "echo \${KUBECONFIG}", returnStdout: true).trim()
+
+                    // Use kubectl to apply your Kubernetes manifests
+                    sh "kubectl --kubeconfig=${kubeConfigPath} apply -f deployment.yaml"
+                    sh "kubectl --kubeconfig=${kubeConfigPath} apply -f service.yaml"
+                
+                }
+            }
+        }
+        
+    }
+}

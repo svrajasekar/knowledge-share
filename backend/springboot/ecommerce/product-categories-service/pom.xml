@@ -14,7 +14,7 @@
 	<name>flexkart-product-categories-service</name>
 	<description>Rest API To Manage Product Categories</description>
 	<properties>
-		<java.version>11</java.version>
+		<java.version>11.0.20</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -52,6 +52,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongodb-driver-sync</artifactId>
+			<version>4.10.2</version>
 		</dependency>
 	</dependencies>
 	<build>

@@ -2,7 +2,14 @@
 <module type="JAVA_MODULE" version="4">
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
-    <content url="file://$MODULE_DIR$" />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/frontend-service" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/product-categories-service" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/product-manufacturers-service" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/product-reviews-service" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/product-taxes-service" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/products-service" isTestSource="false" />
+    </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
